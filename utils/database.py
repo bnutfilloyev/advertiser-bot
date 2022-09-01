@@ -30,3 +30,11 @@ class MongoDB:
             MongoDB.db = client[config.db.database]
 
         return MongoDB.db
+
+    @staticmethod
+    async def add_group(group_name: str, group_id: str):
+        await MongoDB.get_data_base().groups.update_one(
+            filter={'group_id': group_id},
+            update={"$set": {"group_name": group_name}},
+            upsert=True,
+        )
