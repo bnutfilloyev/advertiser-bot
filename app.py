@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import executor
 
 from loader import dp
@@ -12,4 +14,7 @@ async def on_startup(dispatcher):
 
 
 if __name__ == '__main__':
+    logging.basicConfig(format=u'%(filename)s [LINE:%(lineno)d] #%(levelname)-8s [%(asctime)s]  %(message)s',
+                        level=logging.DEBUG)
+
     executor.start_polling(dp, on_startup=on_startup)

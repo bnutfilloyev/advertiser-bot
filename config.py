@@ -2,27 +2,31 @@ from environs import Env
 from pydantic import BaseModel
 
 
-class DbConfig(BaseModel):
+class Bot(BaseModel):
+    """
+    Bot configuration
+    """
+    token: str
+    admins: list
+
+
+class Database(BaseModel):
+    """
+    Database configuration
+    """
     host: str
-    password: str
-    user: str
+    port: int
+    user: str = None
+    password: str = None
     database: str
 
 
-class TgBot(BaseModel):
-    token: str
-    admin_ids: list[int]
-    use_redis: bool
-
-
-class Miscellaneous(BaseModel):
-    other_params: str = None
-
-
 class Config(BaseModel):
-    bot: TgBot
-    database: DbConfig
-    misc: Miscellaneous
+    """
+    Configuration model
+    """
+    bot: Bot
+    db: Database = None
 
 
 def load_config(path: str = None):
@@ -30,16 +34,28 @@ def load_config(path: str = None):
     env.read_env(path)
 
     return Config(
-        bot=TgBot(
+        bot=Bot(
             token=env.str("BOT_TOKEN"),
-            admin_ids=list(map(int, env.list("ADMINS"))),
-            use_redis=env.bool("USE_REDIS"),
+            admins=env.list("ADMINS"),
         ),
-        database=DbConfig(
-            host=env.str('DB_HOST'),
-            password=env.str('DB_PASS'),
-            user=env.str('DB_USER'),
-            database=env.str('DB_NAME')
+        db=Database(
+            host=env.str("DB_HOST"),
+            port=env.int("DB_PORT"),
+            # user=env.str("DB_USER"),
+            # password=env.str("DB_PASSWORD"),
+            database=env.str("DB_DATABASE"),
         ),
-        misc=Miscellaneous()
     )
+
+
+if __name__ == "__main__":
+    config = load_config()
+    print(config)
+    print(config.bot.token)
+    print(config.bot.admins)
+    # print(ADMINS)
+    # print(USE_MONGODB)
+    # print(MONGODB_USERNAME)
+    # print(MONGODB_PASSWORD)
+    # print(MONGODB_HOSTNAME)
+    # print(MONGODB_PORT)
