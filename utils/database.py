@@ -38,3 +38,29 @@ class MongoDB:
             update={"$set": {"group_name": group_name}},
             upsert=True,
         )
+
+    @staticmethod
+    async def get_groups():
+        async for group in MongoDB.get_data_base().groups.find():
+            yield group
+
+    @staticmethod
+    async def set_post(group_id: str, message_id: str, chat_id: str):
+        await MongoDB.get_data_base().groups.update_one(
+            filter={'group_id': group_id},
+            update={"$set": {"message_id": message_id, "chat_id": chat_id}},
+            upsert=True,
+        )
+
+    @staticmethod
+    async def get_post(group_id: str):
+        post = await MongoDB.get_data_base().groups.find_one({'group_id': group_id})
+        return post
+
+    @staticmethod
+    async def update_post(group_id: str, data: dict):
+        await MongoDB.get_data_base().groups.update_one(
+            filter={'group_id': group_id},
+            update={"$set": data},
+            upsert=True,
+        )
