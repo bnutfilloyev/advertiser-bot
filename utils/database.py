@@ -11,16 +11,13 @@ class MongoDB:
     @staticmethod
     def get_client():
         if MongoDB.client is None:
-            # MONGODB_USERNAME = config.db.username
-            # MONGODB_PASSWORD = config.db.password
+            MONGODB_USERNAME = config.db.username
+            MONGODB_PASSWORD = config.db.password
             MONGODB_HOSTNAME = config.db.host
             MONGODB_PORT = config.db.port
 
-            # MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}@{}:{}".format(
-            #     MONGODB_USERNAME, MONGODB_PASSWORD, MONGODB_HOSTNAME, str(MONGODB_PORT)))
-            MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}".format(
-                MONGODB_HOSTNAME, str(MONGODB_PORT)))
-
+            MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}@{}:{}".format(
+                MONGODB_USERNAME, MONGODB_PASSWORD, MONGODB_HOSTNAME, str(MONGODB_PORT)))
         return MongoDB.client
 
     @staticmethod
@@ -30,6 +27,11 @@ class MongoDB:
             MongoDB.db = client[config.db.database]
 
         return MongoDB.db
+
+    @staticmethod
+    async def add_some_data():
+        db = MongoDB.get_data_base()
+        db.test.insert_one({"name": "test"})
 
     @staticmethod
     async def add_group(group_name: str, group_id: str):

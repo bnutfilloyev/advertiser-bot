@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Command
 
+from filters import IsPrivate
 from loader import dp
 from utils.database import MongoDB
 from utils.states import AddGroup
@@ -9,7 +10,7 @@ from utils.states import AddGroup
 db = MongoDB()
 
 
-@dp.message_handler(Command("addgroup"), state="*")
+@dp.message_handler(IsPrivate(), Command("addgroup"), state="*")
 async def add_group(msg: types.Message):
     await msg.answer("<b>⌨️Guruh nominini kiriting:</b>")
     await AddGroup.GetGroupName.set()

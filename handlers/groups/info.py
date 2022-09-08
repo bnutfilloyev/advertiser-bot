@@ -1,8 +1,10 @@
 from aiogram import types
+
+from filters import IsGroup
 from loader import dp, bot
 
 
-@dp.message_handler(commands=['info'], state='*')
+@dp.message_handler(IsGroup(), commands=['info'], state='*')
 async def add_groups(message: types.Message):
     await message.delete()
     await bot.send_message(message.from_user.id,
