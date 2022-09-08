@@ -1,10 +1,10 @@
-from aiogram.types import Message, ContentType
+from loader import dp
 
-from loader import dp, bot
+from utils.database import MongoDB
 
 
-@dp.message_handler(content_types=ContentType.ANY)
-async def echo(message: Message):
-    await bot.copy_message("-1001530205550", message.chat.id, "2868")
-    await message.forward(message.chat.id)
-    await message.copy_to("-1001530205550", "2868")
+@dp.message_handler()
+async def test(message):
+    await message.answer('test')
+    info = await MongoDB.add_some_data()
+    await message.answer(f"<code>{info}</code>")
