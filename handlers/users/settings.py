@@ -1,14 +1,13 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
 
-from filters import IsPrivate
 from keyboards.inline import group_cb, post_settings, setting_cb, groups_list
 from loader import dp, bot
 from utils.database import MongoDB
 from utils.states import Advertisement
 
 
-@dp.callback_query_handler(IsPrivate(), group_cb.filter())
+@dp.callback_query_handler(group_cb.filter())
 async def group_info(call: CallbackQuery, callback_data: dict, state: FSMContext):
     async with state.proxy() as data:
         data['group_id'] = callback_data.get('group_id')
