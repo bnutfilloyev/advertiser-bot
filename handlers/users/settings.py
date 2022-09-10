@@ -20,8 +20,9 @@ async def get_post(call: CallbackQuery, callback_data: dict, state: FSMContext):
         group_id = data.get('group_id')
 
     post = await MongoDB.get_post(group_id)
-    if post is None:
-        await call.message.answer("❌ Post hali yaratilmagan!")
+
+    if (post is None) or (post.get('message_id') is None):
+        await call.message.edit_text("❌ Post hali yaratilmagan!")
         return
 
     message_id, chat_id = post.get('message_id'), post.get('chat_id')
@@ -31,7 +32,7 @@ async def get_post(call: CallbackQuery, callback_data: dict, state: FSMContext):
 
 @dp.callback_query_handler(setting_cb.filter(setting_name='set_post'), state='*')
 async def set_post(call: CallbackQuery, state: FSMContext):
-    await call.message.answer("📝 Yangi postni yuboring:")
+    await call.message.edit_text("📝 Yangi postni yuboring:")
     await Advertisement.GetAdvertisement.set()
 
 
@@ -39,7 +40,7 @@ async def set_post(call: CallbackQuery, state: FSMContext):
 async def get_advertisement(message: Message, state: FSMContext):
     async with state.proxy() as data:
         group_id = data.get('group_id')
-        await MongoDB.set_post(group_id, message.message_id, message.chat.id)
+        await MongoDB.update_groups(group_id, {"message_id": message.message_id, "chat_id": message.chat.id})
         await message.answer("✅ Post yaratildi!")
     await state.finish()
 
