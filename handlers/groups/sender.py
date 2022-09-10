@@ -1,9 +1,12 @@
+import logging
+
 from aiogram.types import Message, ContentType
-from aiogram.utils import exceptions
 
 from filters import IsGroup
-from loader import dp, bot, config
+from loader import dp
+from utils.broadcaster import copy_message, remove_posts
 from utils.database import MongoDB
+from utils.notify_admins import report_log
 
 
 @dp.message_handler(IsGroup(), content_types=ContentType.ANY)
@@ -12,22 +15,21 @@ async def echo(message: Message):
     post = await MongoDB.get_post(str(group_id))
 
     if post is None:
-        return
+        await report_log("No post found")
 
     chat_id = post.get('chat_id')
     message_id = post.get('message_id')
-    new_post = await bot.copy_message(group_id, chat_id, message_id)
+    new_post = await copy_message(group_id, chat_id, message_id)
 
-    if post.get('last_message_id') is None:
-        await MongoDB.update_post(str(group_id), {'last_message_id': new_post.message_id})
+    if new_post is None:
+        logging.info("Request not found {}".format(message_id))
         return
 
-    try:
-        await bot.delete_message(group_id, post.get('last_message_id'))
-    except exceptions.MessageToDeleteNotFound:
-        pass
-    except exceptions.MessageCantBeDeleted:
-        await bot.send_message(config.bot.admins[0], '\nMessageCantBeDeleted: ', group_id, post.get('last_message_id'),
-                               new_post)
+    res = await MongoDB.set_post(str(group_id), new_post.message_id, chat_id)
 
-    await MongoDB.update_post(str(group_id), {'last_message_id': new_post.message_id})
+    if res is None:
+        logging.info("Response not found {}".format(new_post.message_id))
+        return
+
+    await MongoDB.update_groups(str(group_id), {"last_post": res})
+    await remove_posts(group_id, res)
