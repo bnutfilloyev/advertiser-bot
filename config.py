@@ -41,8 +41,8 @@ def load_config(path: str = None):
         db=Database(
             host=env.str("DB_HOST"),
             port=env.int("DB_PORT"),
-            username=env.str("DB_USERNAME"),
-            password=env.str("DB_PASSWORD"),
+            # username=env.str("DB_USERNAME"),
+            # password=env.str("DB_PASSWORD"),
             database=env.str("DB_DATABASE"),
         ),
     )
