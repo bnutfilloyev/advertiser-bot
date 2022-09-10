@@ -11,10 +11,10 @@ class MongoDB:
     @staticmethod
     def get_client():
         if MongoDB.client is None:
-            # MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}@{}:{}".format(
-            #     config.db.username, config.db.password, config.db.host, config.db.port))
+            MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}@{}:{}".format(
+                config.db.username, config.db.password, config.db.host, config.db.port))
 
-            MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}".format(config.db.host, config.db.port))
+            # MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}".format(config.db.host, config.db.port))
         return MongoDB.client
 
     @staticmethod
