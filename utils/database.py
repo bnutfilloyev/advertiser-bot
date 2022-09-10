@@ -34,6 +34,10 @@ class MongoDB:
         )
 
     @staticmethod
+    async def remove_group(group_id: str):
+        await MongoDB.get_data_base().groups.delete_one({'group_id': group_id})
+
+    @staticmethod
     async def get_groups():
         async for group in MongoDB.get_data_base().groups.find():
             yield group
