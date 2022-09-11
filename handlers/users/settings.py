@@ -27,7 +27,7 @@ async def get_post(call: CallbackQuery, callback_data: dict, state: FSMContext):
 
     message_id, chat_id = post.get('message_id'), post.get('chat_id')
 
-    await bot.copy_message(call.from_user.id, chat_id, message_id)
+    await bot.forward_message(call.from_user.id, chat_id, message_id)
 
 
 @dp.callback_query_handler(setting_cb.filter(setting_name='set_post'), state='*')
