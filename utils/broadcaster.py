@@ -37,7 +37,7 @@ async def send_message(user_id: int, text: str, disable_notification: bool = Fal
     return False
 
 
-async def copy_message(group_id: str, chat_id: int, message_id: int) -> bool:
+async def forward_message(group_id: str, chat_id: int, message_id: int) -> bool:
     """
     Safe messages sender
 
@@ -47,7 +47,7 @@ async def copy_message(group_id: str, chat_id: int, message_id: int) -> bool:
     :return:
     """
     try:
-        post = await bot.copy_message(group_id, chat_id, message_id)
+        post = await bot.forward_message(group_id, chat_id, message_id)
     except exceptions.BotBlocked:
         await report_log(f"Target [ID:{group_id}]: blocked by user")
     except exceptions.ChatNotFound:
@@ -55,7 +55,7 @@ async def copy_message(group_id: str, chat_id: int, message_id: int) -> bool:
     except exceptions.RetryAfter as e:
         await report_log(f"Target [ID:{group_id}]: Flood limit is exceeded. Sleep {e.timeout} seconds.")
         await asyncio.sleep(e.timeout)
-        return await copy_message(group_id, chat_id, message_id)  # Recursive call
+        return await forward_message(group_id, chat_id, message_id)  # Recursive call
     except exceptions.UserDeactivated:
         await report_log(f"Target [ID:{group_id}]: user is deactivated")
     except exceptions.TelegramAPIError:
