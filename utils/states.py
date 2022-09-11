@@ -8,3 +8,7 @@ class AddGroup(StatesGroup):
 
 class Advertisement(StatesGroup):
     GetAdvertisement = State()
+
+
+class RemoveGroup(StatesGroup):
+    GetGroupId = State()

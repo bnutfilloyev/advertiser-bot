@@ -14,7 +14,7 @@ class MongoDB:
             MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}@{}:{}".format(
                 config.db.username, config.db.password, config.db.host, config.db.port))
 
-            # MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://{}:{}".format(config.db.host, config.db.port))
+            # MongoDB.client = motor_asyncio.AsyncIOMotorClient("mongodb://localhost:27017")
         return MongoDB.client
 
     @staticmethod
@@ -32,6 +32,10 @@ class MongoDB:
             update={"$set": {"group_name": group_name}},
             upsert=True,
         )
+
+    @staticmethod
+    async def remove_group(group_id: str):
+        await MongoDB.get_data_base().groups.delete_one({'group_id': group_id})
 
     @staticmethod
     async def get_groups():
