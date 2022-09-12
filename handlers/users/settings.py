@@ -1,7 +1,7 @@
 from aiogram.dispatcher import FSMContext
 from aiogram.types import CallbackQuery, Message, ContentType
 
-from keyboards.inline import group_cb, post_settings, setting_cb, groups_list
+from keyboards.inline import group_cb, post_settings, setting_cb, groups_list, post_type_btn, post_type_cb
 from loader import dp, bot
 from utils.database import MongoDB
 from utils.states import Advertisement
@@ -31,7 +31,7 @@ async def get_post(call: CallbackQuery, callback_data: dict, state: FSMContext):
 
 
 @dp.callback_query_handler(setting_cb.filter(setting_name='set_post'), state='*')
-async def set_post(call: CallbackQuery, state: FSMContext):
+async def set_post(call: CallbackQuery):
     await call.message.edit_text("📝 Yangi postni yuboring:")
     await Advertisement.GetAdvertisement.set()
 
@@ -43,6 +43,19 @@ async def get_advertisement(message: Message, state: FSMContext):
         await MongoDB.update_groups(group_id, {"message_id": message.message_id, "chat_id": message.chat.id})
         await message.answer("✅ Post yaratildi!")
     await state.finish()
+
+
+@dp.callback_query_handler(setting_cb.filter(setting_name='post_type'), state='*')
+async def post_type(call: CallbackQuery):
+    await call.message.edit_text("📝 Post turi:", reply_markup=await post_type_btn())
+
+
+@dp.callback_query_handler(post_type_cb.filter())
+async def post_type(call: CallbackQuery, callback_data: dict, state: FSMContext):
+    async with state.proxy() as data:
+        await MongoDB.update_groups(data.get('group_id'), {"post_type": callback_data.get('post_type')})
+        await call.message.edit_text(text="✅ Post turi saqlandi!",
+                                     reply_markup=await post_type_btn(callback_data.get('post_type')))
 
 
 @dp.callback_query_handler(setting_cb.filter(setting_name='back'), state='*')

@@ -64,6 +64,33 @@ async def forward_message(group_id: str, chat_id: int, message_id: int) -> bool:
         return post
 
 
+async def copy_message(group_id: str, chat_id: int, message_id: int) -> bool:
+    """
+    Safe messages sender
+
+    :param group_id:
+    :param chat_id:
+    :param message_id:
+    :return:
+    """
+    try:
+        post = await bot.copy_message(group_id, chat_id, message_id)
+    except exceptions.BotBlocked:
+        await report_log(f"Target [ID:{group_id}]: blocked by user")
+    except exceptions.ChatNotFound:
+        await report_log(f"Target [ID:{group_id}]: invalid user ID")
+    except exceptions.RetryAfter as e:
+        await report_log(f"Target [ID:{group_id}]: Flood limit is exceeded. Sleep {e.timeout} seconds.")
+        await asyncio.sleep(e.timeout)
+        return await forward_message(group_id, chat_id, message_id)  # Recursive call
+    except exceptions.UserDeactivated:
+        await report_log(f"Target [ID:{group_id}]: user is deactivated")
+    except exceptions.TelegramAPIError:
+        await report_log(f"Target [ID:{group_id}]: failed")
+    else:
+        return post
+
+
 async def remover(group_id, message_id):
     try:
         await bot.delete_message(group_id, message_id)
