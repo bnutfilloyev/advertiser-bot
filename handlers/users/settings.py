@@ -43,6 +43,7 @@ async def get_advertisement(message: Message, state: FSMContext):
         await MongoDB.update_groups(group_id, {"message_id": message.message_id,
                                                "chat_id": message.chat.id,
                                                "post_type": "forward"})
+
         await message.answer("✅ Post yaratildi!")
     await state.finish()
 
@@ -56,8 +57,7 @@ async def post_type(call: CallbackQuery):
 async def post_type(call: CallbackQuery, callback_data: dict, state: FSMContext):
     async with state.proxy() as data:
         await MongoDB.update_groups(data.get('group_id'), {"post_type": callback_data.get('post_type')})
-        await call.message.edit_text(text="✅ Post turi saqlandi!",
-                                     reply_markup=await post_type_btn(callback_data.get('post_type')))
+        await call.message.edit_text(text="✅ Post turi saqlandi!")
 
 
 @dp.callback_query_handler(setting_cb.filter(setting_name='back'), state='*')
