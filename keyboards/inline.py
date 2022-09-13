@@ -26,9 +26,6 @@ async def post_settings():
             ],
             [
                 InlineKeyboardButton(text="💬 Post turi", callback_data=setting_cb.new(setting_name='post_type')),
-            ],
-            [
-                InlineKeyboardButton(text="🔙 Orqaga", callback_data=setting_cb.new(setting_name='back'))
             ]
         ]
     )
