@@ -40,7 +40,9 @@ async def set_post(call: CallbackQuery):
 async def get_advertisement(message: Message, state: FSMContext):
     async with state.proxy() as data:
         group_id = data.get('group_id')
-        await MongoDB.update_groups(group_id, {"message_id": message.message_id, "chat_id": message.chat.id})
+        await MongoDB.update_groups(group_id, {"message_id": message.message_id,
+                                               "chat_id": message.chat.id,
+                                               "post_type": "forward"})
         await message.answer("✅ Post yaratildi!")
     await state.finish()
 
